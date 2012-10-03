@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.authors     = ["Ahmad Amireh"]
   s.email       = 'ahmad@amireh.net'
   s.files       = Dir.glob("lib/**/*.rb")
-  s.homepage    = 'http://github.com/amireh/pagehub-markdown'
+  s.homepage    = 'https://github.com/amireh/pagehub-markdown'
 
   s.add_dependency('redcarpet', '>= 2.1.1')
   s.add_dependency('albino', '>= 1.3.3')
