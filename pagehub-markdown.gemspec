@@ -1,8 +1,8 @@
 Gem::Specification.new do |s|
   s.name        = 'pagehub-markdown'
-  s.version     = '0.1.0'
+  s.version     = '0.1.2'
   s.summary     = "PageHub's extensions of GitHub's Redcarpet Markdown renderer."
-  s.description = "A bunch of neat features added to the Markdown renderer via pure Markdown syntax."
+  s.description = "A bunch of extensions added to the Markdown renderer usable as pure Markdown syntax."
   s.authors     = ["Ahmad Amireh"]
   s.email       = 'ahmad@amireh.net'
   s.files       = Dir.glob("lib/**/*.rb")
@@ -12,4 +12,6 @@ Gem::Specification.new do |s|
   s.add_dependency('albino', '>= 1.3.3')
   s.add_dependency('json', '>= 1.7.0')
   s.add_dependency('nokogiri', '>= 1.5.5')
+
+  s.add_development_dependency 'rspec'
 end
