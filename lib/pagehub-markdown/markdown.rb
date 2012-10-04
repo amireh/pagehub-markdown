@@ -41,7 +41,7 @@ module PageHub
       end
 
       def render!(str)
-        configure unless @@renderer
+        configure
 
         @@hooks[:pre_render].each { |processor| processor.call(str) }
 
