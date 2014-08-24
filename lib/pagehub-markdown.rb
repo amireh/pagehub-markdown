@@ -1,5 +1,5 @@
 require 'redcarpet'
-require 'albino'
+require 'pygments'
 
 require 'pagehub-markdown/markdown'
 require 'pagehub-markdown/processors/embedder'

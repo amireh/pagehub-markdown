@@ -33,11 +33,20 @@ module PageHub
       # PageHubOptions, RendererOptions, and RendererExtensions
       # for accepted values
       def configure(ph_options = {}, options = {}, extensions = {})
-        @@options  = PageHubOptions.merge(ph_options)
+        @@options  ||= PageHubOptions.dup
+        @@options.merge!(ph_options)
 
         @@renderer = Redcarpet::Markdown.new(
           HTMLWithAlbino.new(RendererOptions.merge(options)),
           RendererExtensions.merge(extensions))
+      end
+
+      def reset_config()
+        @@options = PageHubOptions.dup
+      end
+
+      def options
+        @@options
       end
 
       def render!(str)
@@ -47,10 +56,7 @@ module PageHub
 
         # escape any JavaScript snippets
         if @@options[:escape_scripts]
-          str.gsub!(/\<script(.*)\>/i) {
-            mutated = true
-            "&lt;script#{$1}&gt;"
-          }
+          str.gsub!(%r{<([^>]*)script[^>]*>}, "&lt;\\1script&gt;")
         end
 
         str = @@renderer.render(str)
@@ -61,7 +67,9 @@ module PageHub
       end
 
       def render(str)
-        o = str.dup; render!(o); o
+        str.dup.tap do |md|
+          render!(md)
+        end
       end
 
       def mutate!(str)
@@ -80,7 +88,8 @@ module PageHub
     @@options   = { }
 
     PageHubOptions = {
-      escape_scripts:   true
+      escape_scripts:   true,
+      plain_errors:     true
     }
 
     RendererOptions = {
@@ -112,10 +121,11 @@ module PageHub
       def block_code(code, language)
         begin
           # TODO: try to figure out whether @language is valid
-          out = Albino.colorize(code, language)
+          out = Pygments.highlight(code, { lexer: language.to_s, encoding: 'utf-8' })
         rescue Exception => e
-          out = ""
           # return "-- INVALID CODE BLOCK, MAKE SURE YOU'VE SURROUNDED CODE WITH ```"
+          puts "[warn] pagehub-markdown: unable to highlight code block for language #{language}. Reason: #{e.message}"
+          out = ""
         end
 
         # just render the code as plain text if the language is invalid

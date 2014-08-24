@@ -2,10 +2,8 @@ module PageHub
 
   describe Markdown do
 
-    after do
-      # reset any custom options
-      Markdown.configure()
-    end
+    before { Markdown.configure }
+    after  { Markdown.reset_config }
 
     it "should reject a non-callable processor" do
       expect { Markdown.add_processor(:pre_render, 5) }.to raise_error
@@ -27,7 +25,7 @@ module PageHub
       EOF
 
       rendered.should eq strip <<-EOF
-        <h2 id="toc_0">Hello World</h2>
+        <h2 id="hello-world">Hello World</h2>
 
         <p>Moo.</p>
       EOF
@@ -62,10 +60,9 @@ module PageHub
         ```
       EOF
 
-      rendered.should eq strip <<-EOF
+      rendered.should eq full_strip <<-EOF
         <div class="highlight"><pre><span class="kd">var</span> <span class="nx">foo</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
-          </pre>
-        </div>
+          </pre></div>
       EOF
     end
 
@@ -76,10 +73,9 @@ module PageHub
         ```
       EOF
 
-      rendered.should eq strip <<-EOF
+      rendered.should eq full_strip <<-EOF
         <div class="highlight"><pre>var foo = 5;
-          </pre>
-        </div>
+        </pre></div>
       EOF
     end
 

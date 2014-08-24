@@ -2,6 +2,9 @@ module PageHub
 module Markdown
   describe "Mutator: Date Injector" do
 
+    before { Markdown.configure }
+    after  { Markdown.reset_config }
+    
     it "should inject date" do
       Markdown.configure({ escape_scripts: true })
 

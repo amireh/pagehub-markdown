@@ -1,6 +1,7 @@
 module PageHub
 module Markdown
   module ToC
+    FENCED_CODE_BLOCKS = /```[^`]+```/xm
 
     # Builds a tree of headings from a given block of Markdown
     # text, the returned list can be turned into HTML using
@@ -24,7 +25,7 @@ module Markdown
       headings  = []
       current   = []
       toc_index = 0
-      content.scan(pattern).each { |l, t|
+      content.gsub(FENCED_CODE_BLOCKS, '').scan(pattern).each { |l, t|
         level,title = formatter.call(l, t)
 
         if level <= threshold
@@ -73,7 +74,7 @@ module Markdown
       def to_html()
         html = ""
         html << "<li>"
-        html << "<a href=\"\#toc_#{index}\">" << title << "</a>"
+        html << "<a href=\"\##{header_anchor(title)}\">" << title << "</a>"
 
         if children.any? then
           html << "<ol>"
@@ -82,6 +83,12 @@ module Markdown
         end
 
         html << "</li>"
+      end
+
+      private
+
+      def header_anchor(title)
+        CGI.escapeHTML(title.downcase.gsub(/\s+/, '-'))
       end
     end
   end

@@ -1,60 +1,87 @@
-module PageHub
-module Markdown
+describe PageHub::Markdown::ToC do
+  Markdown = PageHub::Markdown
+  before { Markdown.configure }
+  after  { Markdown.reset_config }
 
-  describe "Processor: ToC Generator" do
+  it "should build a ToC" do
 
-    before do
-      Markdown.configure()
-    end
+    raw = strip <<-EOF
+      [!toc!]
 
-    it "should build a ToC" do
+      # Food
 
-      raw = strip <<-EOF
-        [!toc!]
+      ## Fruit
 
-        # Food
+      ## Veggies
 
-        ## Fruit
+      ### Lettuce
 
-        ## Veggies
+      # Animals
+    EOF
 
-        ### Lettuce
+    rendered = Markdown.render! raw
 
-        # Animals
-      EOF
+    strip(rendered).should match strip <<-EOF
+      <ol><li><a href="#food">Food</a><ol><li><a href="#fruit">Fruit</a></li><li><a href="#veggies">Veggies</a><ol><li><a href="#lettuce">Lettuce</a></li></ol></li></ol></li><li><a href="#animals">Animals</a></li></ol>
 
-      rendered = Markdown.render! raw
+      <h1 id="food">Food</h1>
 
-      strip(rendered).should match strip <<-EOF
-        <ol><li><a href="#toc_0">Food</a><ol><li><a href="#toc_1">Fruit</a></li><li><a href="#toc_2">Veggies</a><ol><li><a href="#toc_3">Lettuce</a></li></ol></li></ol></li><li><a href="#toc_4">Animals</a></li></ol>
+      <h2 id="fruit">Fruit</h2>
 
-        <h1 id="toc_0">Food</h1>
+      <h2 id="veggies">Veggies</h2>
 
-        <h2 id="toc_1">Fruit</h2>
+      <h3 id="lettuce">Lettuce</h3>
 
-        <h2 id="toc_2">Veggies</h2>
-
-        <h3 id="toc_3">Lettuce</h3>
-
-        <h1 id="toc_4">Animals</h1>
-      EOF
-    end
-
-    it "should build an empty ToC" do
-
-      raw = strip <<-EOF
-        [!toc!]
-      EOF
-
-      rendered = Markdown.render! raw
-
-      strip(rendered).should match strip <<-EOF
-        <ol></ol>
-      EOF
-    end
-
-
+      <h1 id="animals">Animals</h1>
+    EOF
   end
 
-end
+  it "should build an empty ToC" do
+    raw = strip <<-EOF
+      [!toc!]
+    EOF
+
+    rendered = Markdown.render! raw
+
+    strip(rendered).should match strip <<-EOF
+      <ol></ol>
+    EOF
+  end
+
+  it "should ignore stuff in fenced code blocks" do
+    raw = strip <<-EOF
+      [!toc!]
+
+      # test
+
+      ```coffescript
+      # foo
+      ```
+
+      ```bash
+      # bar
+      ```
+
+      # Moving on...
+
+      This should still be included.
+    EOF
+
+    rendered = Markdown.render! raw
+
+    strip(rendered).should match strip <<-EOF
+      <ol><li><a href="#test">test</a></li><li><a href="#moving-on...">Moving on...</a></li></ol>
+    EOF
+  end
+
+  it "should generate sanitized anchor ids" do
+    str = <<-STR
+      # Testing "O(n\\^2)"
+    STR
+    rendered = Markdown.render! strip(str)
+
+    strip(rendered).should match strip <<-STR
+      <h1 id="testing-&quot;o(n^2)&quot;">Testing &quot;O(n^2)&quot;</h1>
+    STR
+  end
 end

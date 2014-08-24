@@ -9,7 +9,6 @@ module Markdown
   # and allows for content extraction from HTML pages
   # so it can be neatly embedded in another page.
   module Embedder
-
     class EmbeddingError    < RuntimeError; end
     class InvalidSizeError  < EmbeddingError; end
     class InvalidTypeError  < EmbeddingError; end
@@ -54,9 +53,12 @@ module Markdown
           # reject if the host is banned
           return "" if FilteredHosts.include?(uri.host)
 
-          Net::HTTP.start(uri.host, uri.port) do |http|
-            http.open_timeout = Timeout
-            http.read_timeout = Timeout
+          http = Net::HTTP.new(uri.host, uri.port)
+          http.open_timeout = Timeout
+          http.read_timeout = Timeout
+          http.use_ssl      = (uri.scheme == 'https')
+
+          http.start do
 
             # get the content type and length
             ctype = ""
@@ -92,7 +94,7 @@ module Markdown
           raise e
         rescue Exception => e
           # mask as a generic EmbeddingError
-          raise EmbeddingError.new e.message
+          raise EmbeddingError.new "generic: #{e.class}##{e.message}"
         end
 
         ""
@@ -183,7 +185,7 @@ module Markdown
           }
         end
 
-        node
+        node.to_s
       end
 
     end
@@ -204,18 +206,19 @@ module Markdown
         node.xpath('div[@id="breadcrumbs"]').remove
         node.xpath('div[@id="bottom"]').remove
         stamp(node, uri, 'pagehub')
-        node
+        node.to_s
       end
     end
 
     register_processor(GithubWikiProcessor.new)
     register_processor(PageHubProcessor.new)
 
+    MATCH = /^\B\[\![include|embed]\s?(.*)\!\]\((.*)\)/
   end # Embedder module
 
   add_processor :pre_render, lambda {|str|
     # Embed remote references, if any
-    str.gsub!(/^\B\[\!include\s?(.*)\!\]\((.*)\)/) {
+    str.gsub!(Embedder::MATCH) {
       content = ""
 
       uri = $2
@@ -227,6 +230,15 @@ module Markdown
 
       begin
         content = Embedder.get_resource(uri, source, args)
+        content.gsub!(Embedder::MATCH) {
+          source, uri = ($1 || '').split.first, $2
+
+          s = "[See this indirectly embedded resource"
+          s << source.empty? ? '' : " from '#{source}'"
+          s << ": #{uri}]"
+          s << "(#{uri})"
+          s
+        }
       rescue Embedder::InvalidSizeError => e
         content << "**Embedding error**: the file you tried to embed is too big - #{e.message.to_i} bytes."
         content << " (**Source**: [#{$2}](#{$2}))\n\n"

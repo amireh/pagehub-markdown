@@ -7,6 +7,10 @@ def strip(s)
   o
 end
 
+def full_strip(s)
+  strip(s).strip
+end
+
 def html_strip(s)
   o = ""
   tmp = strip(s)

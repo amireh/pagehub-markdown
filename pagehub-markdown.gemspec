@@ -8,10 +8,10 @@ Gem::Specification.new do |s|
   s.files       = Dir.glob("lib/**/*.rb")
   s.homepage    = 'https://github.com/amireh/pagehub-markdown'
 
-  s.add_dependency('redcarpet', '>= 2.1.1')
-  s.add_dependency('albino', '>= 1.3.3')
-  s.add_dependency('json', '>= 1.7.0')
-  s.add_dependency('nokogiri', '>= 1.5.5')
+  s.add_dependency('redcarpet', '= 3.1.2')
+  s.add_dependency('json')
+  s.add_dependency('nokogiri', '= 1.6.3.1')
+  s.add_dependency('pygments.rb', '~> 0.6.0')
 
   s.add_development_dependency 'rspec'
 end
