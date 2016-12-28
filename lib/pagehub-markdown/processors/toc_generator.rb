@@ -13,7 +13,7 @@ module Markdown
     # renders a table of content using nested <ol> list nodes
     # from a given list of Heading objects produced by ToC::from_markdown()
     def self.to_html(toc)
-      html = "<ol>"
+      html = "<ol class=\"table-of-contents\">"
       toc.each { |heading| html << heading.to_html }
       html << "</ol>"
       html

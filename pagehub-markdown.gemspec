@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'pagehub-markdown'
-  s.version     = '0.2.0'
+  s.version     = '0.2.1'
   s.summary     = "PageHub's extensions of GitHub's Redcarpet Markdown renderer."
   s.description = "A bunch of extensions added to the Markdown renderer usable as pure Markdown syntax."
   s.authors     = ["Ahmad Amireh"]

@@ -20,7 +20,7 @@ module Markdown
       rendered = Markdown.render! raw
 
       html_strip(rendered).should eq strip <<-EOF
-        <ol><li><a href="#toc_0">My Embedding Test</a></li></ol>
+        <ol class=\"table-of-contents\"><li><a href="#toc_0">My Embedding Test</a></li></ol>
         <h1 id="toc_0">My Embedding Test</h1>
         <div data-embed-uri="http://www.pagehub.org/pagehub-editor/embed-test-with-headings" data-embed-src="pagehub">
         <h1>Food</h1>

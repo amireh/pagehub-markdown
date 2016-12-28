@@ -22,7 +22,7 @@ describe PageHub::Markdown::ToC do
     rendered = Markdown.render! raw
 
     strip(rendered).should match strip <<-EOF
-      <ol><li><a href="#food">Food</a><ol><li><a href="#fruit">Fruit</a></li><li><a href="#veggies">Veggies</a><ol><li><a href="#lettuce">Lettuce</a></li></ol></li></ol></li><li><a href="#animals">Animals</a></li></ol>
+      <ol class=\"table-of-contents\"><li><a href="#food">Food</a><ol><li><a href="#fruit">Fruit</a></li><li><a href="#veggies">Veggies</a><ol><li><a href="#lettuce">Lettuce</a></li></ol></li></ol></li><li><a href="#animals">Animals</a></li></ol>
 
       <h1 id="food">Food</h1>
 
@@ -44,7 +44,7 @@ describe PageHub::Markdown::ToC do
     rendered = Markdown.render! raw
 
     strip(rendered).should match strip <<-EOF
-      <ol></ol>
+      <ol class=\"table-of-contents\"></ol>
     EOF
   end
 
@@ -70,7 +70,7 @@ describe PageHub::Markdown::ToC do
     rendered = Markdown.render! raw
 
     strip(rendered).should match strip <<-EOF
-      <ol><li><a href="#test">test</a></li><li><a href="#moving-on...">Moving on...</a></li></ol>
+      <ol class=\"table-of-contents\"><li><a href="#test">test</a></li><li><a href="#moving-on...">Moving on...</a></li></ol>
     EOF
   end
 
